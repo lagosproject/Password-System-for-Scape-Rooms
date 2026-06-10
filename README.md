@@ -1,4 +1,8 @@
-# Hacker Decryptor Console - Escape Room Password System
+<p align="center">
+  <img src="https://raw.githubusercontent.com/lagosproject/Password-System-for-Scape-Rooms/main/public/favicon.svg" alt="Lock Icon" width="80" height="80" />
+</p>
+
+# Escape Room Password System
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build & Deploy](https://github.com/lagosproject/Password-System-for-Scape-Rooms/actions/workflows/deploy.yml/badge.svg)](https://github.com/lagosproject/Password-System-for-Scape-Rooms/actions)
