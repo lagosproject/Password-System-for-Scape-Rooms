@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hacker Decryptor Console - Escape Room Password System</title>
+    <!-- Google Fonts for hacker and digital feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Background overlay for upload image or cyberpunk gradient fallback -->
+    <div id="dynamic-bg" class="app-background"></div>
+    <!-- Dedicated layer for the operator-uploaded custom background image -->
+    <div id="bg-custom" class="custom-bg-layer"></div>
+    <div class="scanline"></div>
+
+    <div id="app" class="main-container">
+      
+      <!-- SCREEN 1: Setup Configuration -->
+      <section id="screen-setup" class="screen active">
+        <div class="console-box glassmorphism">
+          <div class="console-header">
+            <span class="pulse-dot"></span>
+            <h1 data-i18n="configTitle">DECRYPTOR CONFIGURATION v1.0</h1>
+          </div>
+          <form id="setup-form" class="form-grid">
+            <div class="form-group full-width">
+              <label for="setup-bg" data-i18n="bgImageLabel">BACKGROUND IMAGE</label>
+              <div class="bg-upload-row">
+                <div class="file-upload-wrapper">
+                  <input type="file" id="setup-bg" accept="image/png, image/jpeg, image/jpg" />
+                  <span class="file-upload-btn" data-i18n="chooseFile">CHOOSE FILE</span>
+                  <span id="file-name" class="file-name" data-i18n="noFileSelected">No file selected (using default terminal background)</span>
+                </div>
+                <div id="bg-thumbnail-preview" class="thumbnail-preview hidden">
+                  <img id="bg-thumbnail-img" src="" alt="Background Thumbnail" />
+                  <button type="button" id="btn-remove-bg" class="btn-remove-media" data-i18n-title="removeBgTooltip" title="Remove Background">&times;</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="setup-password" data-i18n="passwordLabel">DECRYPTION KEY (Max 8 characters)</label>
+              <input type="text" id="setup-password" required maxlength="8" data-i18n-placeholder="passwordPlaceholder" placeholder="ENTER CODE..." autocomplete="off" />
+            </div>
+
+            <div class="form-group">
+              <label for="setup-minutes" data-i18n="minutesLabel">COUNTDOWN TIME (Minutes)</label>
+              <input type="number" id="setup-minutes" required min="1" max="999" placeholder="15" autocomplete="off" />
+            </div>
+
+            <div class="form-group">
+              <label for="setup-attempts" data-i18n="attemptsLabel">MAX ATTEMPTS</label>
+              <input type="number" id="setup-attempts" required min="1" max="99" placeholder="5" autocomplete="off" />
+            </div>
+
+            <div class="form-group">
+              <label for="setup-win-msg" data-i18n="winMsgLabel">SUCCESS MESSAGE</label>
+              <input type="text" id="setup-win-msg" required data-i18n-placeholder="winMsgPlaceholder" placeholder="ACCESS GRANTED" autocomplete="off" />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="setup-lose-msg" data-i18n="loseMsgLabel">FAIL MESSAGE</label>
+              <input type="text" id="setup-lose-msg" required data-i18n-placeholder="loseMsgPlaceholder" placeholder="SYSTEM LOCKDOWN" autocomplete="off" />
+            </div>
+
+            <div id="setup-errors" class="status-msg error hidden"></div>
+            <div id="setup-success" class="status-msg success hidden"></div>
+
+            <div class="form-actions full-width">
+              <button type="submit" id="btn-save" class="btn btn-primary" data-i18n="initBtn">INITIALIZE DECRYPTOR</button>
+            </div>
+
+            <!-- Config-screen controls: language + audio -->
+            <div class="setup-controls full-width">
+              <div id="lang-switcher" class="lang-switcher">
+                <button class="lang-btn" data-lang="en" id="lang-en" title="English">🇬🇧</button>
+                <button class="lang-btn" data-lang="es" id="lang-es" title="Español">🇪🇸</button>
+                <button class="lang-btn" data-lang="fr" id="lang-fr" title="Français">🇫🇷</button>
+              </div>
+              <div id="audio-status" class="audio-indicator" title="Mute/Unmute Audio">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                </svg>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: Wait Screen -->
+      <section id="screen-wait" class="screen">
+        <div class="wait-container">
+          <div class="lock-graphic pulse">
+            <svg class="lock-icon" viewBox="0 0 24 24" width="120" height="120">
+              <path class="lock-shackle" d="M12 2A5 5 0 0 0 7 7v4H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 5a3 3 0 0 1 6 0v4H9z" />
+            </svg>
+          </div>
+          <div class="start-trigger-text">
+            <h2 data-i18n="waitTitle">DECRYPTOR ARMED</h2>
+            <p data-i18n="waitSubtitle">CLICK ANYWHERE TO BEGIN THE SEQUENCE</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 3: Game Screen -->
+      <section id="screen-game" class="screen">
+        <div class="game-container glassmorphism">
+          <header class="game-header">
+            <div class="status-panel">
+              <span class="label" data-i18n="statusLabel">STATUS:</span>
+              <span class="value text-warning pulse" data-i18n="statusDecrypting">DECRYPTING...</span>
+            </div>
+            
+            <div id="timer-display" class="digital-timer">00:00</div>
+            
+            <div class="attempts-panel">
+              <span class="label" data-i18n="attemptsRemainingLabel">ATTEMPTS REMAINING:</span>
+              <span id="attempts-display" class="value text-danger">5</span>
+            </div>
+          </header>
+
+          <main class="game-core">
+            <div class="system-lock-visual">
+              <svg id="game-lock-svg" class="lock-icon secured" viewBox="0 0 24 24" width="80" height="80">
+                <path class="lock-shackle" d="M12 2A5 5 0 0 0 7 7v4H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 5a3 3 0 0 1 6 0v4H9z" />
+              </svg>
+            </div>
+            
+            <div class="game-instructions" data-i18n="gameInstructions">INTRODUCE DECRYPTION KEY</div>
+            
+            <div id="inputs-container" class="key-inputs-row">
+              <!-- Dynamically populated character inputs -->
+            </div>
+          </main>
+
+          <footer class="game-footer">
+            <div class="terminal-bar">
+              <span class="prompt">></span>
+              <span id="terminal-message" class="text-info" data-i18n="terminalReady">SECURE SHELL BOUND - AWAITING DATA...</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <!-- SCREEN 4: Win/Lose Result Overlay -->
+      <section id="screen-result" class="screen">
+        <div class="result-box glassmorphism">
+          <div id="result-graphic" class="lock-graphic">
+            <!-- Dynamically changes lock state -->
+          </div>
+          <h1 id="result-title" data-i18n="resultDetermined">ACCESS DETERMINED</h1>
+          <p id="result-message" data-i18n="resultDefault">Result description message.</p>
+          <div id="result-time-taken" class="result-subtext"></div>
+          
+          <button id="btn-reset" class="btn btn-secondary" data-i18n="resultReset">RESET SYSTEM</button>
+        </div>
+      </section>
+
+    </div>
+
+
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
